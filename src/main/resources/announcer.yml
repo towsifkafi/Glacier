@@ -1,0 +1,10 @@
+
+announcements:
+  example:
+    type: message
+    delay: 10
+    server: all
+    text:
+      - "       Test          "
+      - "   This is a test announcement"
+      - "         line 3"

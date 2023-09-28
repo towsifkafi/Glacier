@@ -1,0 +1,10 @@
+main-command: "<color:#00b0f4>Glacier v<version></color>"
+main-command-reload: "<color:#00b0f4>Glacier v<version></color> | <color:#3ef438>Config Reloaded</color>"
+main-command-version: "The current loaded version of <color:#00b0f4>Glacier</color> is <color:#3ef438>v<version></color>"
+
+gtitle-usage: "<green>Usage: </green><color:#f47264>/gtitle <fadeIn> <stay> <fadeOut> <msg></color>"
+gtitle-sent: "<color:#00b0f4>Title sent successfully</color>"
+
+gactionbar-usage: "<green>Usage: </green><color:#f47264>/gactionbar <target> <msg></color>"
+gactionbar-unknown: "<color:#f47264>Unable to find server/player:</color> <target>"
+gactionbar-unknown-player: "<color:#f47264>Unable to find player:</color> <target>"

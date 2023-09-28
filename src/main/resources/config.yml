@@ -1,0 +1,15 @@
+# Hey!
+version: "1.0.0"
+
+
+# Announcer
+announcer-enabled: true
+
+# Utilities
+log-plugin-messages: false
+
+# SpicordAddons
+playerlist:
+  color: "#00b0f4"
+  footer-text: "mc.arcticbd.net"
+  no-player: "**There are no players online.**"
