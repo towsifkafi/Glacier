@@ -39,9 +39,7 @@ public class AnnouncerHandler {
 
                 if(player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(serverName)
                         || serverName.equalsIgnoreCase("all")) {
-
                     sendAnnouncement(plugin, id, player);
-
                 }
 
             });
@@ -56,9 +54,15 @@ public class AnnouncerHandler {
         List<String> text = plugin.announcerConfig.getStringList(key+".text");
 
         if(type.equalsIgnoreCase("message")) {
-            player.sendMessage(
-                    plugin.mm.deserialize(String.join("\n", text))
-            );
+
+            if(plugin.papi == null) {
+                player.sendMessage(
+                        plugin.mm.deserialize(String.join("\n", text))
+                );
+            } else {
+                plugin.papi.formatComponentPlaceholders(String.join("\n", text), player.getUniqueId()).thenAccept(player::sendMessage);
+            }
+
         } else if(type.equalsIgnoreCase("title")) {
             int fadeIn = plugin.announcerConfig.getInt(key+".fadeIn");
             int stay = plugin.announcerConfig.getInt(key+".stay");
@@ -87,7 +91,11 @@ public class AnnouncerHandler {
 
             player.showTitle(title);
         } else if(type.equalsIgnoreCase("actionbar")) {
-            player.sendActionBar(plugin.mm.deserialize(String.join(" ", text)));
+            if(plugin.papi == null) {
+                player.sendActionBar(plugin.mm.deserialize(String.join(" ", text)));
+            } else {
+                plugin.papi.formatComponentPlaceholders(String.join(" ", text), player.getUniqueId()).thenAccept(player::sendActionBar);
+            }
         }
 
     }
