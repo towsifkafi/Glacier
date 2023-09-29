@@ -15,6 +15,7 @@ Glacier is a velocity plugin I wrote to get familiar with velocity plugin develo
   - `/gannouncer send` - Manually trigger an announcement
 
 Aliases for `glacier` command are `glc` and `glcr`
+<br>
 Downloads can be found in the release tab.
 
 ## Other Features
