@@ -50,7 +50,6 @@ public class GlacierMain {
     public final ProxyServer server;
     public Logger logger;
     public final Path dataDirectory;
-    public PlayerListAddon playerList;
 
     public ConfigProvider messages;
     public ConfigProvider config;
@@ -79,8 +78,9 @@ public class GlacierMain {
         announcerConfig.loadConfig();
 
         if(server.getPluginManager().getPlugin("spicord").isPresent()) {
-            playerList = new PlayerListAddon((this));
-            SpicordLoader.addStartupListener(spicord -> spicord.getAddonManager().registerAddon(playerList));
+            SpicordLoader.addStartupListener(spicord -> spicord.getAddonManager().registerAddon(
+                    new PlayerListAddon((this))
+            ));
         }
 
         if(server.getPluginManager().getPlugin("spicord").isPresent() && announcerConfig.getBoolean("enable-papi-bridge")) {
