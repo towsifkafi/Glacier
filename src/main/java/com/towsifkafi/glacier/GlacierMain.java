@@ -2,6 +2,7 @@ package com.towsifkafi.glacier;
 
 import com.google.inject.Inject;
 import com.towsifkafi.glacier.commands.GActionBar;
+import com.towsifkafi.glacier.commands.GAnnouncer;
 import com.towsifkafi.glacier.commands.GTitle;
 import com.towsifkafi.glacier.commands.Glacier;
 import com.towsifkafi.glacier.config.ConfigProvider;
@@ -9,6 +10,7 @@ import com.towsifkafi.glacier.spicord.PlayerListAddon;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -18,6 +20,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
+import net.william278.papiproxybridge.api.PlaceholderAPI;
 import org.slf4j.Logger;
 import org.spicord.SpicordLoader;
 
@@ -28,20 +31,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.towsifkafi.glacier.announcer.AnnouncerHandler.scheduleAnnouncement;
+
 @Plugin(
         id = "glacier",
         name = "Glacier",
-        description = "Weird ass util plugin for ArcticRealms or whatever",
+        description = "Weird ass util plugin for minecraft servers",
         authors = {"TowsifKafi"},
         url = "https://towsifkafi.com",
-        version = "1.0-SNAPSHOT"
+        version = "1.0-SNAPSHOT",
+        dependencies = {
+                @Dependency(id = "spicord", optional = true),
+                @Dependency(id = "papiproxybridge", optional = true)
+        }
 )
 public class GlacierMain {
 
     public final ProxyServer server;
     public Logger logger;
     public final Path dataDirectory;
-    public LoginLoggerAddon loginLogger;
     public PlayerListAddon playerList;
 
     public ConfigProvider messages;
@@ -51,6 +59,7 @@ public class GlacierMain {
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
     public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
+    public PlaceholderAPI papi;
 
     @Inject
     public GlacierMain(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -69,8 +78,14 @@ public class GlacierMain {
         config.loadConfig();
         announcerConfig.loadConfig();
 
-        playerList = new PlayerListAddon((this));
-        SpicordLoader.addStartupListener(spicord -> spicord.getAddonManager().registerAddon(playerList));
+        if(server.getPluginManager().getPlugin("spicord").isPresent()) {
+            playerList = new PlayerListAddon((this));
+            SpicordLoader.addStartupListener(spicord -> spicord.getAddonManager().registerAddon(playerList));
+        }
+
+        if(server.getPluginManager().getPlugin("spicord").isPresent() && announcerConfig.getBoolean("enable-papi-bridge")) {
+            papi = PlaceholderAPI.createInstance();
+        }
 
         loadCommands();
         loadAutoMessages();
@@ -98,10 +113,18 @@ public class GlacierMain {
 
         //register /gactionbar command
         commandManager.register(
-                commandManager.metaBuilder("gactiobar")
+                commandManager.metaBuilder("gactionbar")
                         .aliases("gaction")
                         .plugin(this)
                         .build(), GActionBar.createBrigradierCommand(this)
+        );
+
+        //register /gannouncer command
+        commandManager.register(
+                commandManager.metaBuilder("gannouncer")
+                        .aliases("gannounce")
+                        .plugin(this)
+                        .build(), GAnnouncer.createBrigradierCommand(this)
         );
 
     }
@@ -114,68 +137,8 @@ public class GlacierMain {
         messageSchedules.clear();
         if(config.getBoolean("announcer-enabled")) {
             announcerConfig.getMap("announcements").forEach((k, msg) -> {
-                String key = "announcements."+ k;
-                String type = announcerConfig.getString(key+".type");
-                int delay = announcerConfig.getInt(key+".delay");
-                String serverName = announcerConfig.getString(key+".server");
-
-                List<String> text = announcerConfig.getStringList(key+".text");
-
-                ScheduledTask task = server.getScheduler()
-                        .buildTask(this, () -> {
-                            server.getAllServers().forEach(server -> {
-                                server.getPlayersConnected().forEach(player -> {
-
-                                    if(player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(serverName)
-                                            || serverName.equalsIgnoreCase("all")) {
-
-                                        if(type.equalsIgnoreCase("message")) {
-                                            player.sendMessage(
-                                                    mm.deserialize(String.join("\n", text))
-                                            );
-                                        } else if(type.equalsIgnoreCase("title")) {
-                                            int fadeIn = announcerConfig.getInt(key+".fadeIn");
-                                            int stay = announcerConfig.getInt(key+".stay");
-                                            int fadeOut = announcerConfig.getInt(key+".fadeOut");
-
-                                            if(fadeIn < 0) fadeIn = 1;
-                                            if(stay < 0) stay = 3;
-                                            if(fadeOut < 0) fadeOut = 1;
-
-                                            Title.Times times = Title.Times.times(
-                                                    Duration.ofSeconds((long) (fadeIn)),
-                                                    Duration.ofSeconds((long) (stay)),
-                                                    Duration.ofSeconds((long) (fadeOut))
-                                            );
-
-                                            Component titleText = mm.deserialize("No Title");
-                                            Component subtitleText = Component.empty();
-                                            if(!text.isEmpty()) titleText = mm.deserialize(text.get(0));
-                                            if(text.size() > 1)subtitleText = mm.deserialize(text.get(1));
-
-                                            Title title = Title.title(
-                                                    titleText,
-                                                    subtitleText,
-                                                    times
-                                            );
-
-                                            player.showTitle(title);
-                                        } else if(type.equalsIgnoreCase("actionbar")) {
-                                            player.sendActionBar(mm.deserialize(String.join(" ", text)));
-                                        }
-
-                                    }
-
-                                });
-                            });
-
-                        })
-                        .repeat(delay, TimeUnit.SECONDS)
-                        .schedule();
-
-                messageSchedules.put(k, task);
+                scheduleAnnouncement(this, k);
             });
-
         }
 
     }
@@ -183,6 +146,10 @@ public class GlacierMain {
     public void reload() {
         messages.loadConfig();
         config.loadConfig();
+        reloadAnnouncer();
+    }
+
+    public void reloadAnnouncer() {
         announcerConfig.loadConfig();
         loadAutoMessages();
     }

@@ -1,4 +1,5 @@
 
+enable-papi-bridge: true
 announcements:
   example:
     type: message

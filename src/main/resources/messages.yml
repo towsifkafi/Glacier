@@ -2,9 +2,18 @@ main-command: "<color:#00b0f4>Glacier v<version></color>"
 main-command-reload: "<color:#00b0f4>Glacier v<version></color> | <color:#3ef438>Config Reloaded</color>"
 main-command-version: "The current loaded version of <color:#00b0f4>Glacier</color> is <color:#3ef438>v<version></color>"
 
+unknown-argument: "<color:#f47264>Unknown argument provided</color>"
+
 gtitle-usage: "<green>Usage: </green><color:#f47264>/gtitle <fadeIn> <stay> <fadeOut> <msg></color>"
 gtitle-sent: "<color:#00b0f4>Title sent successfully</color>"
 
 gactionbar-usage: "<green>Usage: </green><color:#f47264>/gactionbar <target> <msg></color>"
 gactionbar-unknown: "<color:#f47264>Unable to find server/player:</color> <target>"
 gactionbar-unknown-player: "<color:#f47264>Unable to find player:</color> <target>"
+
+gannouncer-usage: "<green>Usage: </green><color:#f47264>/gannouncer reload/list/view/send</color>"
+gannouncer-reload: "<color:#00b0f4>Glacier v<version></color> | <color:#3ef438>Announcements Reloaded</color>"
+gannouncer-list: "<color:#00b0f4>Loaded Announcements</color> | <list>"
+gannouncer-usage-view: "<color:#00b0f4>Available Announcements:</color> <list>\n<green>Usage: </green><color:#f47264>/gannouncer view <id></color>"
+gannouncer-usage-send: "<color:#00b0f4>Available Announcements:</color> <list>\n<green>Usage: </green><color:#f47264>/gannouncer send <id></color>"
+gannouncer-unknown-id: "<color:#f47264>Unknown announcement id provided</color>\n<color:#00b0f4>Available Announcements:</color> <list>"
