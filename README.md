@@ -20,5 +20,5 @@ Downloads can be found in the release tab.
 ## Other Features
 
  - All messages are configurable through `messages.yml` file
- - Announcements and messages supports MiniMessage. You can use [Adventure Web UI](https://webui.advntr.dev/) to create customized messages with colors and click/chat events.
- - Added support [PAPIProxyBridge](https://github.com/WiIIiam278/PAPIProxyBridge). By default, disabled in config.
+ - Announcements and messages support MiniMessage. You can use [Adventure Web UI](https://webui.advntr.dev/) to create customized messages with colors and click/chat events.
+ - Added support for [PAPIProxyBridge](https://github.com/WiIIiam278/PAPIProxyBridge). By default, disabled in config.
