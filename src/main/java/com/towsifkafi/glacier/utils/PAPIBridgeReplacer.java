@@ -16,8 +16,8 @@ public class PAPIBridgeReplacer {
         this.api = PlaceholderAPI.createInstance();
     }
 
-    public CompletableFuture<Component> formatComponentPlaceholders(String message, UUID player) {
-        return api.formatComponentPlaceholders(message, player);
+    public CompletableFuture<String> formatPlaceholders(String message, UUID player) {
+        return api.formatPlaceholders(message, player);
     }
 
 }

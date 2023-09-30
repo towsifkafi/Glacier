@@ -60,7 +60,11 @@ public class AnnouncerHandler {
                         plugin.mm.deserialize(String.join("\n", text))
                 );
             } else {
-                plugin.papi.formatComponentPlaceholders(String.join("\n", text), player.getUniqueId()).thenAccept(player::sendMessage);
+                plugin.papi.formatPlaceholders(String.join("\n", text), player.getUniqueId()).thenAccept(message -> {
+                    player.sendMessage(
+                            plugin.mm.deserialize(message)
+                    );
+                });
             }
 
         } else if(type.equalsIgnoreCase("title")) {
@@ -94,7 +98,11 @@ public class AnnouncerHandler {
             if(plugin.papi == null) {
                 player.sendActionBar(plugin.mm.deserialize(String.join(" ", text)));
             } else {
-                plugin.papi.formatComponentPlaceholders(String.join(" ", text), player.getUniqueId()).thenAccept(player::sendActionBar);
+                plugin.papi.formatPlaceholders(String.join(" ", text), player.getUniqueId()).thenAccept(message -> {
+                    player.sendActionBar(
+                            plugin.mm.deserialize(message)
+                    );
+                });
             }
         }
 
