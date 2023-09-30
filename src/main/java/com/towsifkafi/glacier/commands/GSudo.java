@@ -1,10 +1,10 @@
 package com.towsifkafi.glacier.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
@@ -12,18 +12,21 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.towsifkafi.glacier.GlacierMain.replaceDefault;
 
-public class GActionBar {
+public class GSudo {
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         Component defaultMessage = plugin.mm.deserialize(
-                plugin.messages.getString("gactionbar-usage")
+                plugin.messages.getString("gsudo-usage")
         );
-        LiteralCommandNode<CommandSource> actionMain = LiteralArgumentBuilder
-                .<CommandSource>literal("gactionbar")
-                .requires(source -> source.hasPermission("glacier.admin.actionbar"))
+        LiteralCommandNode<CommandSource> sudoMain = LiteralArgumentBuilder.<CommandSource>
+                literal("gsudo")
+                .requires(source -> source.hasPermission("glacier.admin.sudo"))
                 .executes(context -> {
                     CommandSource source = context.getSource();
                     source.sendMessage(defaultMessage);
@@ -61,24 +64,35 @@ public class GActionBar {
                             );
                             return 0;
                         })
-                        .then(RequiredArgumentBuilder.<CommandSource, String>argument("message", StringArgumentType.greedyString())
+                        .then(RequiredArgumentBuilder.<CommandSource, String>argument("command", StringArgumentType.greedyString())
                                 .suggests((ctx, builder) -> {
-                                    List<String> tab = List.of(new String[]{"ArctionBar Message"});
-                                    tab.forEach(builder::suggest);
+
+                                    List<String> tab = List.of(new String[]{"command or message"});
+                                    String message = "";
+                                    try {
+                                        message = ctx.getArgument("command", String.class);
+                                        builder.suggest(message);
+                                    } catch(IllegalArgumentException ignored) {
+                                        tab.forEach(builder::suggest);
+                                    }
+
                                     return builder.buildFuture();
                                 })
                                 .executes(context -> {
                                     String target = context.getArgument("target", String.class);
-                                    String message = context.getArgument("message", String.class);
+                                    String message = context.getArgument("command", String.class);
 
                                     if(plugin.server.getAllServers().stream().anyMatch(server -> server.getServerInfo().getName().equalsIgnoreCase(target))) {
                                         plugin.server.getAllServers().stream()
                                                 .filter(server -> server.getServerInfo().getName().equalsIgnoreCase(target))
                                                 .findFirst().get().getPlayersConnected().forEach(player -> {
-                                                    player.sendActionBar(
-                                                            plugin.lm.deserialize(message)
-                                                    );
+                                                    if(!player.hasPermission("glacier.exempt.sudo")) {
+                                                        player.spoofChatInput(message);
+                                                    }
                                                 });
+
+                                        successful(context, plugin, target, message);
+
                                         return 1;
                                     } else if(plugin.server.getAllPlayers().stream().anyMatch(player -> player.getUsername().equalsIgnoreCase(target))) {
                                         Optional<Player> player = plugin.server.getPlayer(target);
@@ -86,29 +100,39 @@ public class GActionBar {
 
                                             context.getSource().sendMessage(
                                                     replaceDefault(
-                                                            plugin.mm.deserialize(plugin.messages.getString("gactionbar-unknown-player")),
+                                                            plugin.mm.deserialize(plugin.messages.getString("gsudo-unknown-player")),
                                                             "<target>",
                                                             target
                                                     )
                                             );
                                             return 0;
                                         } else {
-                                            player.get().sendActionBar(
-                                                    plugin.lm.deserialize(message)
-                                            );
+                                            if(!player.get().hasPermission("glacier.exempt.sudo")) {
+                                                player.get().spoofChatInput(message);
+                                                successful(context, plugin, target, message);
+                                            } else {
+                                                context.getSource().sendMessage(
+                                                        replaceDefault(
+                                                                plugin.mm.deserialize(plugin.messages.getString("gsudo-exempt")),
+                                                                "<target>",
+                                                                target
+                                                        )
+                                                );
+                                            }
                                             return 1;
                                         }
                                     } else if(Objects.equals(target, "all")) {
                                         plugin.server.getAllPlayers().forEach(player -> {
-                                            player.sendActionBar(
-                                                    plugin.lm.deserialize(message)
-                                            );
+                                            if(!player.hasPermission("glacier.exempt.sudo")) {
+                                                player.spoofChatInput(message);
+                                            }
                                         });
+                                        successful(context, plugin, target, message);
                                         return 1;
                                     } else {
                                         context.getSource().sendMessage(
                                                 replaceDefault(
-                                                        plugin.mm.deserialize(plugin.messages.getString("gactionbar-unknown")),
+                                                        plugin.mm.deserialize(plugin.messages.getString("gsudo-unknown")),
                                                         "<target>",
                                                         target
                                                 )
@@ -120,6 +144,20 @@ public class GActionBar {
                         )
                 )
                 .build();
-        return new BrigadierCommand(actionMain);
+
+        return new BrigadierCommand(sudoMain);
+    }
+
+    private static void successful(CommandContext<CommandSource> context, GlacierMain plugin, String target, String message) {
+        context.getSource().sendMessage(
+                replaceDefault(
+                        replaceDefault(plugin.mm.deserialize(plugin.messages.getString("gsudo-successful")),
+                                "<target>",
+                                target
+                        ),
+                        "<command>",
+                        message
+                )
+        );
     }
 }

@@ -1,10 +1,7 @@
 package com.towsifkafi.glacier;
 
 import com.google.inject.Inject;
-import com.towsifkafi.glacier.commands.GActionBar;
-import com.towsifkafi.glacier.commands.GAnnouncer;
-import com.towsifkafi.glacier.commands.GTitle;
-import com.towsifkafi.glacier.commands.Glacier;
+import com.towsifkafi.glacier.commands.*;
 import com.towsifkafi.glacier.config.ConfigProvider;
 import com.towsifkafi.glacier.spicord.PlayerListAddon;
 import com.towsifkafi.glacier.utils.PAPIBridgeReplacer;
@@ -95,9 +92,6 @@ public class GlacierMain {
         loadAutoMessages();
     }
 
-    @Subscribe
-
-
     public void loadCommands() {
 
         CommandManager commandManager = server.getCommandManager();
@@ -132,6 +126,14 @@ public class GlacierMain {
                         .aliases("gannounce")
                         .plugin(this)
                         .build(), GAnnouncer.createBrigradierCommand(this)
+        );
+
+        //register /gsudo command
+        commandManager.register(
+                commandManager.metaBuilder("gsudo")
+                        .aliases("vsudo")
+                        .plugin(this)
+                        .build(), GSudo.createBrigradierCommand(this)
         );
 
     }

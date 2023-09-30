@@ -13,6 +13,8 @@ Glacier is a velocity plugin I wrote to get familiar with velocity plugin develo
   - `/gannouncer list` - Prints loaded announcements
   - `/gannouncer view` - View loaded announcements
   - `/gannouncer send` - Manually trigger an announcement
+- `/gsudo` | **glacier.admin.sudo**  -  Spoof chat messages or commands
+  - **glacier.exempt.sudo** - Player with this permission can't be sudo-ed
 
 Aliases for `glacier` command are `glc` and `glcr`
 <br>
