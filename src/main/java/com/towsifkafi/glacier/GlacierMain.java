@@ -26,10 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spicord.SpicordLoader;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.towsifkafi.glacier.announcer.AnnouncerHandler.scheduleAnnouncement;
 
@@ -39,7 +41,7 @@ import static com.towsifkafi.glacier.announcer.AnnouncerHandler.scheduleAnnounce
         description = "Weird ass util plugin for minecraft servers",
         authors = {"TowsifKafi"},
         url = "https://towsifkafi.com",
-        version = "1.0-SNAPSHOT",
+        version = "1.1.0-SNAPSHOT",
         dependencies = {
                 @Dependency(id = "spicord", optional = true),
                 @Dependency(id = "papiproxybridge", optional = true)
@@ -50,6 +52,7 @@ public class GlacierMain {
     public final ProxyServer server;
     public Logger logger;
     public final Path dataDirectory;
+    public final Properties properties = new Properties();
 
     public ConfigProvider messages;
     public ConfigProvider config;
@@ -62,10 +65,12 @@ public class GlacierMain {
     public PAPIBridgeReplacer papi;
 
     @Inject
-    public GlacierMain(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+    public GlacierMain(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws IOException {
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
+
+        properties.load(this.getClass().getClassLoader().getResourceAsStream("pom.properties"));
     }
 
     @Subscribe

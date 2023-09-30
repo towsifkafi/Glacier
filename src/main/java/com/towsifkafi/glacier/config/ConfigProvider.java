@@ -45,33 +45,33 @@ public class ConfigProvider {
                 e.printStackTrace();
             }
         } else {
-            try {
-                File file = new File(dataDir.toString(), fileName);
-                DumperOptions options = new DumperOptions();
-                options.setAllowUnicode(true);
-                options.setIndent(2);
-                options.setPrettyFlow(true);
-                options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-                Yaml yamlToWrite = new Yaml(options);
-                InputStream inputStream = new FileInputStream(file);
-                Map<String, Object> map = yamlToWrite.load(inputStream);
-                inputStream.close();
-                InputStream targetInputStream = plugin
-                        .getClass()
-                        .getClassLoader()
-                        .getResourceAsStream(fileName);
-                Map<String, Object> targetMap = yamlToWrite.load(targetInputStream);
-
-                Optional<Map<String, Object>> updatedOptional = updateMap(map, targetMap);
-                if (updatedOptional.isPresent()) {
-                    OutputStreamWriter writer =
-                            new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-                    yamlToWrite.dump(updatedOptional.get(), writer);
-                }
-            } catch (IOException exception) {
-                plugin.logger.error("Config file could not be updated.");
-                exception.printStackTrace();
-            }
+//            try {
+//                File file = new File(dataDir.toString(), fileName);
+//                DumperOptions options = new DumperOptions();
+//                options.setAllowUnicode(true);
+//                options.setIndent(2);
+//                options.setPrettyFlow(true);
+//                options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+//                Yaml yamlToWrite = new Yaml(options);
+//                InputStream inputStream = new FileInputStream(file);
+//                Map<String, Object> map = yamlToWrite.load(inputStream);
+//                inputStream.close();
+//                InputStream targetInputStream = plugin
+//                        .getClass()
+//                        .getClassLoader()
+//                        .getResourceAsStream(fileName);
+//                Map<String, Object> targetMap = yamlToWrite.load(targetInputStream);
+//
+//                Optional<Map<String, Object>> updatedOptional = updateMap(map, targetMap);
+//                if (updatedOptional.isPresent()) {
+//                    OutputStreamWriter writer =
+//                            new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+//                    yamlToWrite.dump(updatedOptional.get(), writer);
+//                }
+//            } catch (IOException exception) {
+//                plugin.logger.error("Config file could not be updated.");
+//                exception.printStackTrace();
+//            }
         }
 
         try {

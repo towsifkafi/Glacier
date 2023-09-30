@@ -49,10 +49,10 @@ public class GAnnouncer {
                             });
 
                             if(subcommand.equalsIgnoreCase("reload")) {
-                                plugin.reloadAnnouncer();
+                                plugin.announcerConfig.loadConfig();
                                 context.getSource().sendMessage(plugin.mm.deserialize(
-                                        plugin.messages.getString("gannouncer-reload"),
-                                        Placeholder.unparsed("version", plugin.config.getString("version"))
+                                        plugin.messages.getString("gannouncer-reload-config"),
+                                        Placeholder.unparsed("version", plugin.properties.getProperty("version"))
                                 ));
                                 return Command.SINGLE_SUCCESS;
                             } else if(subcommand.equalsIgnoreCase("list")) {
@@ -76,17 +76,34 @@ public class GAnnouncer {
                                 );
                                 context.getSource().sendMessage(message);
                                 return 0;
+                            } else {
+                                context.getSource().sendMessage(plugin.mm.deserialize(
+                                        plugin.messages.getString("unknown-argument")
+                                ));
+                                return 0;
                             }
 
-                            return 0;
                         }).then(RequiredArgumentBuilder.<CommandSource, String>argument("id", StringArgumentType.word())
                                 .suggests((ctx, builder) -> {
-                                    List<String> announcements = new ArrayList<>();
-                                    plugin.messageSchedules.forEach((k, v) -> {
-                                        announcements.add(k);
-                                    });
 
-                                    announcements.forEach(builder::suggest);
+                                    String subcommand = ctx.getArgument("subcommand", String.class);
+                                    if(subcommand.equalsIgnoreCase("reload")) {
+
+                                        List<String> tab = new ArrayList<>();
+                                        tab.add("config");
+                                        tab.add("all");
+
+                                        tab.forEach(builder::suggest);
+
+                                    } else {
+                                        List<String> announcements = new ArrayList<>();
+                                        plugin.messageSchedules.forEach((k, v) -> {
+                                            announcements.add(k);
+                                        });
+
+                                        announcements.forEach(builder::suggest);
+                                    }
+
                                     return builder.buildFuture();
                                 })
                                 .executes(context -> {
@@ -99,10 +116,28 @@ public class GAnnouncer {
                                     });
 
                                     if(subcommand.equalsIgnoreCase("reload")) {
-                                        context.getSource().sendMessage(plugin.mm.deserialize(
-                                                plugin.messages.getString("unknown-argument")
-                                        ));
-                                        return 0;
+
+                                        if(id.equalsIgnoreCase("config")) {
+                                            plugin.announcerConfig.loadConfig();
+                                            context.getSource().sendMessage(plugin.mm.deserialize(
+                                                    plugin.messages.getString("gannouncer-reload-config"),
+                                                    Placeholder.unparsed("version", plugin.properties.getProperty("version"))
+                                            ));
+                                            return Command.SINGLE_SUCCESS;
+                                        } else if(id.equalsIgnoreCase("all")) {
+                                            plugin.reloadAnnouncer();
+                                            context.getSource().sendMessage(plugin.mm.deserialize(
+                                                    plugin.messages.getString("gannouncer-reload"),
+                                                    Placeholder.unparsed("version", plugin.properties.getProperty("version"))
+                                            ));
+                                            return Command.SINGLE_SUCCESS;
+                                        } else {
+                                            context.getSource().sendMessage(plugin.mm.deserialize(
+                                                    plugin.messages.getString("unknown-argument")
+                                            ));
+                                            return 0;
+                                        }
+
                                     } else if (subcommand.equalsIgnoreCase("list")) {
                                         context.getSource().sendMessage(plugin.mm.deserialize(
                                                 plugin.messages.getString("unknown-argument")

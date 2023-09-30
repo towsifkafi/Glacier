@@ -13,6 +13,7 @@ gactionbar-unknown-player: "<color:#f47264>Unable to find player:</color> <targe
 
 gannouncer-usage: "<green>Usage: </green><color:#f47264>/gannouncer reload/list/view/send</color>"
 gannouncer-reload: "<color:#00b0f4>Glacier v<version></color> | <color:#3ef438>Announcements Reloaded</color>"
+gannouncer-reload-config: "<color:#00b0f4>Glacier v<version></color> | <color:#3ef438>Announcements Config Reloaded</color>"
 gannouncer-list: "<color:#00b0f4>Loaded Announcements</color> | <list>"
 gannouncer-usage-view: "<color:#00b0f4>Available Announcements:</color> <list>\n<green>Usage: </green><color:#f47264>/gannouncer view <id></color>"
 gannouncer-usage-send: "<color:#00b0f4>Available Announcements:</color> <list>\n<green>Usage: </green><color:#f47264>/gannouncer send <id></color>"

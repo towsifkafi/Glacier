@@ -1,12 +1,8 @@
-# Hey!
-version: "1.0.0"
-
-
 # Announcer
 announcer-enabled: true
 
 # Utilities
-log-plugin-messages: false
+
 
 # SpicordAddons
 playerlist:

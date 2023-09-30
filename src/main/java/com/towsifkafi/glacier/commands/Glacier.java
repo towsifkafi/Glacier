@@ -26,7 +26,7 @@ public class Glacier {
 
                     Component message = plugin.mm.deserialize(
                             plugin.messages.getString("main-command"),
-                            Placeholder.unparsed("version", plugin.config.getString("version"))
+                            Placeholder.unparsed("version", plugin.properties.getProperty("version"))
                     );
                     source.sendMessage(message);
 
@@ -41,19 +41,24 @@ public class Glacier {
                         .executes(context -> {
 
                             String subcommand = context.getArgument("subcommand", String.class);
-                            if(Objects.equals(subcommand, "reload")) {
+                            if(subcommand.equalsIgnoreCase("reload")) {
                                 plugin.reload();
                                 Component message = plugin.mm.deserialize(
                                         plugin.messages.getString("main-command-reload"),
-                                        Placeholder.unparsed("version", plugin.config.getString("version"))
+                                        Placeholder.unparsed("version", plugin.properties.getProperty("version"))
                                 );
                                 context.getSource().sendMessage(message);
-                            } else if(Objects.equals(subcommand, "version")) {
+                            } else if(subcommand.equalsIgnoreCase("version")) {
                                 Component message = plugin.mm.deserialize(
                                         plugin.messages.getString("main-command-version"),
-                                        Placeholder.unparsed("version", plugin.config.getString("version"))
+                                        Placeholder.unparsed("version", plugin.properties.getProperty("version"))
                                 );
                                 context.getSource().sendMessage(message);
+                            } else {
+                                context.getSource().sendMessage(plugin.mm.deserialize(
+                                        plugin.messages.getString("unknown-argument")
+                                ));
+                                return 0;
                             }
 
                             return Command.SINGLE_SUCCESS;
