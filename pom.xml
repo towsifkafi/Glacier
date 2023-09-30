@@ -113,6 +113,7 @@
             <groupId>com.github.WiIIiam278</groupId>
             <artifactId>PAPIProxyBridge</artifactId>
             <version>1.4.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

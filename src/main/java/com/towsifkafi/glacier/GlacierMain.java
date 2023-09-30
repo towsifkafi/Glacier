@@ -7,6 +7,8 @@ import com.towsifkafi.glacier.commands.GTitle;
 import com.towsifkafi.glacier.commands.Glacier;
 import com.towsifkafi.glacier.config.ConfigProvider;
 import com.towsifkafi.glacier.spicord.PlayerListAddon;
+import com.towsifkafi.glacier.utils.PAPIBridgeReplacer;
+import com.towsifkafi.glacier.utils.SpicordHook;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
@@ -19,17 +21,15 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.title.Title;
 import net.william278.papiproxybridge.api.PlaceholderAPI;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spicord.SpicordLoader;
 
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.towsifkafi.glacier.announcer.AnnouncerHandler.scheduleAnnouncement;
 
@@ -58,7 +58,8 @@ public class GlacierMain {
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
     public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
-    public PlaceholderAPI papi;
+    public SpicordHook spicordHook;
+    public PAPIBridgeReplacer papi;
 
     @Inject
     public GlacierMain(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -77,19 +78,20 @@ public class GlacierMain {
         config.loadConfig();
         announcerConfig.loadConfig();
 
-        if(server.getPluginManager().getPlugin("spicord").isPresent()) {
-            SpicordLoader.addStartupListener(spicord -> spicord.getAddonManager().registerAddon(
-                    new PlayerListAddon((this))
-            ));
+        if(isPluginPresent("spicord")) {
+            spicordHook = new SpicordHook(this);
         }
 
-        if(server.getPluginManager().getPlugin("spicord").isPresent() && announcerConfig.getBoolean("enable-papi-bridge")) {
-            papi = PlaceholderAPI.createInstance();
+        if(isPluginPresent("papiproxybridge") && announcerConfig.getBoolean("enable-papi-bridge")) {
+            papi = new PAPIBridgeReplacer(this);
         }
 
         loadCommands();
         loadAutoMessages();
     }
+
+    @Subscribe
+
 
     public void loadCommands() {
 
@@ -160,5 +162,9 @@ public class GlacierMain {
                 .replacement(replace)
                 .build();
         return defaultMessage.replaceText(config);
+    }
+
+    public boolean isPluginPresent(@NotNull String dependency) {
+        return server.getPluginManager().getPlugin(dependency.toLowerCase(Locale.ENGLISH)).isPresent();
     }
 }
