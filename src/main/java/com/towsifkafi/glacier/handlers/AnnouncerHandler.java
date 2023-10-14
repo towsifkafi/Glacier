@@ -1,7 +1,6 @@
-package com.towsifkafi.glacier.announcer;
+package com.towsifkafi.glacier.handlers;
 
 import com.towsifkafi.glacier.GlacierMain;
-import com.towsifkafi.glacier.config.ConfigProvider;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;

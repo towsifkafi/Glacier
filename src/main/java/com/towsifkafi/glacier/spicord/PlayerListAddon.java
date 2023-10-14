@@ -72,7 +72,7 @@ public class PlayerListAddon extends SimpleAddon {
 
     private String[] escapeUnderscores(List<String> players) {
         return players.stream()
-                .map(s -> s.replace("_", "\\_"))
+                //.map(s -> s.replace("_", "\\_"))
                 .map(s -> "`"+s+"`")
                 .toArray(String[]::new);
     }

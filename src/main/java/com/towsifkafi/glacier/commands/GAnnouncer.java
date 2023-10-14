@@ -15,10 +15,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
-import static com.towsifkafi.glacier.announcer.AnnouncerHandler.handleAnnouncement;
-import static com.towsifkafi.glacier.announcer.AnnouncerHandler.sendAnnouncement;
+import static com.towsifkafi.glacier.handlers.AnnouncerHandler.handleAnnouncement;
+import static com.towsifkafi.glacier.handlers.AnnouncerHandler.sendAnnouncement;
 
 public class GAnnouncer {
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {

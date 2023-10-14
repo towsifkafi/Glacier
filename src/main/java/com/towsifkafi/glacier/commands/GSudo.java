@@ -10,6 +10,7 @@ import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class GSudo {
                 .requires(source -> source.hasPermission("glacier.admin.sudo"))
                 .executes(context -> {
                     CommandSource source = context.getSource();
+
                     source.sendMessage(defaultMessage);
                     return Command.SINGLE_SUCCESS;
                 })
