@@ -141,6 +141,14 @@ public class GlacierMain {
                         .build(), GSudo.createBrigradierCommand(this)
         );
 
+        //register /gkick command
+        commandManager.register(
+                commandManager.metaBuilder("gkick")
+                        .aliases("kick")
+                        .plugin(this)
+                        .build(), GKick.createBrigradierCommand(this)
+        );
+
     }
 
     public void loadAutoMessages() {

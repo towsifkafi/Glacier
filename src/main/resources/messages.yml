@@ -24,3 +24,8 @@ gsudo-unknown: "<color:#f47264>Unable to find server/player:</color> <target>"
 gsudo-unknown-player: "<color:#f47264>Unable to find player:</color> <target>"
 gsudo-successful: "<color:#00b0f4>Successfully executed <yellow><command></yellow> for <red><target></red></color>"
 gsudo-exempt: "<color:#f47264>You cannot sudo: </color><target>"
+
+gkick-usage: "<green>Usage: </green><color:#f47264>/gkick <type> <target> <reason></color>"
+gkick-no-players: "<color:#f47264>There are no players online to kick.</color>"
+gkick-players: "<color:#00b0f4>Successfully kicked <target></color>"
+gkick-default-kick-message: "Internal Exception: io.netty.handler.codec.DecoderException: com.google.gson.JsonSyntaxException: com.google.gson.stream.MalformedJsonException: Use JsonReader.setLenient (true) to accept malformed JSON at line 1 column 1 path $"

@@ -15,6 +15,10 @@ Glacier is a velocity plugin I wrote to get familiar with velocity plugin develo
   - `/gannouncer send` - Manually trigger an announcement
 - `/gsudo` | **glacier.admin.sudo**  -  Spoof chat messages or commands
   - **glacier.exempt.sudo** - Player with this permission can't be sudo-ed
+- `/gkick` | **glacier.admin.kick** - Kick players from the proxy
+  - `/gkick byname <matcher> [reason]` - This will kick every player that has matching string in their name
+  - `/gkick byserver <server> [reason]` - Kick players from a specific server
+  - `/gkick byip <ip> [reason]` - Kick players by IP, players with same IP Address will get be kicked
 
 Aliases for `glacier` command are `glc` and `glcr`
 <br>
