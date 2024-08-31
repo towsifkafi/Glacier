@@ -26,8 +26,8 @@ public class GSudo {
                 plugin.messages.getString("gsudo-usage")
         );
         LiteralCommandNode<CommandSource> sudoMain = LiteralArgumentBuilder.<CommandSource>
-                literal("gsudo")
-                .requires(source -> source.hasPermission("glacier.admin.sudo"))
+                literal(plugin.commands.getString("gsudo.command"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("gsudo.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
 

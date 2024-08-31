@@ -25,8 +25,8 @@ public class GAnnouncer {
                 plugin.messages.getString("gannouncer-usage")
         );
         LiteralCommandNode<CommandSource> announcerMain = LiteralArgumentBuilder
-                .<CommandSource>literal("gannouncer")
-                .requires(source -> source.hasPermission("glacier.admin.announcer"))
+                .<CommandSource>literal(plugin.commands.getString("gannouncer.command"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("gannouncer.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
                     source.sendMessage(defaultMessage);

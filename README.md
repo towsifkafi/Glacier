@@ -20,7 +20,7 @@ Glacier is a velocity plugin I wrote to get familiar with velocity plugin develo
   - `/gkick byserver <server> [reason]` - Kick players from a specific server
   - `/gkick byip <ip> [reason]` - Kick players by IP, players with same IP Address will get be kicked
 
-Aliases for `glacier` command are `glc` and `glcr`
+**All commands & aliases can be disabled or edited in `plugins/glacier/commands.yml` file.**
 <br>
 Downloads can be found in the release tab.
 

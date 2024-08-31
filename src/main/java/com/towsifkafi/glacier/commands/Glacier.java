@@ -20,7 +20,7 @@ public class Glacier {
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         LiteralCommandNode<CommandSource> glacierMain = LiteralArgumentBuilder
                 .<CommandSource>literal("glacier")
-                .requires(source -> source.hasPermission("glacier.admin"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("glacier.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
 

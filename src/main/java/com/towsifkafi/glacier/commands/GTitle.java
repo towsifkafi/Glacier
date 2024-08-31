@@ -23,8 +23,8 @@ public class GTitle {
                 plugin.messages.getString("gtitle-usage")
         );
         LiteralCommandNode<CommandSource> titleMain = LiteralArgumentBuilder
-                .<CommandSource>literal("gtitle")
-                .requires(source -> source.hasPermission("glacier.admin.title"))
+                .<CommandSource>literal(plugin.commands.getString("gtitle.command"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("gtitle.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
                     source.sendMessage(defaultMessage);

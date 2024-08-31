@@ -1,0 +1,48 @@
+## /glacier command
+glacier:
+  enabled: true
+  command: "glacier"
+  permission: "glacier.admin"
+  aliases:
+    - glc
+    - glcr
+
+## /gtitle command
+gtitle:
+  enabled: true
+  command: "gtitle"
+  permission: "glacier.admin.title"
+  aliases:
+    - titleg
+
+## /gactionbar command
+gactionbar:
+  enabled: true
+  command: "gactionbar"
+  permission: "glacier.admin.actionbar"
+  aliases:
+    - gaction
+
+## /gannouncer command
+gannouncer:
+  enabled: true
+  command: "gannouncer"
+  permission: "glacier.admin.announcer"
+  aliases:
+    - gannounce
+
+## /gsudo command
+gsudo:
+  enabled: true
+  command: "gsudo"
+  permission: "glacier.admin.sudo"
+  aliases:
+    - sudo
+
+## /gkick command
+gkick:
+  enabled: true
+  command: "gkick"
+  permission: "glacier.admin.kick"
+  aliases:
+    - kick

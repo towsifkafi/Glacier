@@ -121,8 +121,8 @@ public class GKick {
                 plugin.messages.getString("gkick-usage")
         );
         LiteralCommandNode<CommandSource> announcerMain = LiteralArgumentBuilder
-                .<CommandSource>literal("gkick")
-                .requires(source -> source.hasPermission("glacier.admin.kick"))
+                .<CommandSource>literal(plugin.commands.getString("gkick.command"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("gkick.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
                     source.sendMessage(defaultMessage);

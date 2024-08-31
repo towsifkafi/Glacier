@@ -22,8 +22,8 @@ public class GActionBar {
                 plugin.messages.getString("gactionbar-usage")
         );
         LiteralCommandNode<CommandSource> actionMain = LiteralArgumentBuilder
-                .<CommandSource>literal("gactionbar")
-                .requires(source -> source.hasPermission("glacier.admin.actionbar"))
+                .<CommandSource>literal(plugin.commands.getString("gactionbar.command"))
+                .requires(source -> source.hasPermission(plugin.commands.getString("gactionbar.permission")))
                 .executes(context -> {
                     CommandSource source = context.getSource();
                     source.sendMessage(defaultMessage);

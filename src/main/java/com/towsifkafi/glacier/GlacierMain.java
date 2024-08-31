@@ -53,6 +53,7 @@ public class GlacierMain {
     public ConfigProvider messages;
     public ConfigProvider config;
     public ConfigProvider announcerConfig;
+    public ConfigProvider commands;
     public ConfigProvider books;
 
     public MiniMessage mm = MiniMessage.miniMessage();
@@ -78,12 +79,14 @@ public class GlacierMain {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         enableMetrics();
         this.messages = new ConfigProvider(this, dataDirectory, "messages.yml");
+        this.commands = new ConfigProvider(this, dataDirectory, "commands.yml");
         this.config = new ConfigProvider(this, dataDirectory, "config.yml");
         this.announcerConfig = new ConfigProvider(this, dataDirectory, "announcer.yml");
 
         messages.loadConfig();
         config.loadConfig();
         announcerConfig.loadConfig();
+        commands.loadConfig();
 
         if(isPluginPresent("spicord")) {
             spicordHook = new SpicordHook(this);
@@ -101,53 +104,59 @@ public class GlacierMain {
 
     public void loadCommands() {
 
-        // register /glacier command
-        commandManager.register(
-                commandManager.metaBuilder("glacier")
-                        .aliases("glc", "glcr")
-                        .plugin(this)
-                        .build(), Glacier.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("glacier.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("glacier.command"))
+                            .aliases(commands.getStringList("glacier.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), Glacier.createBrigradierCommand(this)
+            );
+        }
 
-        // register /gtitle command
-        commandManager.register(
-                commandManager.metaBuilder("gtitle")
-                        .aliases("titleg")
-                        .plugin(this)
-                        .build(), GTitle.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("gtitle.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("gtitle.command"))
+                            .aliases(commands.getStringList("gtitle.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), GTitle.createBrigradierCommand(this)
+            );
+        }
 
-        //register /gactionbar command
-        commandManager.register(
-                commandManager.metaBuilder("gactionbar")
-                        .aliases("gaction")
-                        .plugin(this)
-                        .build(), GActionBar.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("gactionbar.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("gactionbar.command"))
+                            .aliases(commands.getStringList("gactionbar.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), GActionBar.createBrigradierCommand(this)
+            );
+        }
 
-        //register /gannouncer command
-        commandManager.register(
-                commandManager.metaBuilder("gannouncer")
-                        .aliases("gannounce")
-                        .plugin(this)
-                        .build(), GAnnouncer.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("gannouncer.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("gannouncer.command"))
+                            .aliases(commands.getStringList("gannouncer.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), GAnnouncer.createBrigradierCommand(this)
+            );
+        }
 
-        //register /gsudo command
-        commandManager.register(
-                commandManager.metaBuilder("gsudo")
-                        .aliases("vsudo")
-                        .plugin(this)
-                        .build(), GSudo.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("gsudo.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("gsudo.command"))
+                            .aliases(commands.getStringList("gsudo.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), GSudo.createBrigradierCommand(this)
+            );
+        }
 
-        //register /gkick command
-        commandManager.register(
-                commandManager.metaBuilder("gkick")
-                        .aliases("kick")
-                        .plugin(this)
-                        .build(), GKick.createBrigradierCommand(this)
-        );
+        if(commands.getBoolean("gkick.enabled")) {
+            commandManager.register(
+                    commandManager.metaBuilder(commands.getString("gkick.command"))
+                            .aliases(commands.getStringList("gkick.aliases").toArray(new String[0]))
+                            .plugin(this)
+                            .build(), GKick.createBrigradierCommand(this)
+            );
+        }
 
     }
 
