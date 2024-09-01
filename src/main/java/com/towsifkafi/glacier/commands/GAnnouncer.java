@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.towsifkafi.glacier.handlers.AnnouncerHandler.handleAnnouncement;
-import static com.towsifkafi.glacier.handlers.AnnouncerHandler.sendAnnouncement;
+import static com.towsifkafi.glacier.handlers.AnnouncerManager.handleAnnouncement;
+import static com.towsifkafi.glacier.handlers.AnnouncerManager.sendAnnouncement;
 
 public class GAnnouncer {
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {

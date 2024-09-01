@@ -3,6 +3,8 @@ package com.towsifkafi.glacier;
 import com.google.inject.Inject;
 import com.towsifkafi.glacier.commands.*;
 import com.towsifkafi.glacier.config.ConfigProvider;
+import com.towsifkafi.glacier.events.PostLogin;
+import com.towsifkafi.glacier.handlers.ServerLinksManager;
 import com.towsifkafi.glacier.utils.Metrics;
 import com.towsifkafi.glacier.utils.PAPIBridgeReplacer;
 import com.towsifkafi.glacier.utils.SpicordHook;
@@ -14,6 +16,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import com.velocitypowered.api.util.ServerLink;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -23,12 +26,9 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static com.towsifkafi.glacier.handlers.AnnouncerHandler.scheduleAnnouncement;
+import static com.towsifkafi.glacier.handlers.AnnouncerManager.scheduleAnnouncement;
 
 @Plugin(
         id = "glacier",
@@ -54,13 +54,19 @@ public class GlacierMain {
     public ConfigProvider config;
     public ConfigProvider announcerConfig;
     public ConfigProvider commands;
+    public ConfigProvider serverlinksConfig;
     public ConfigProvider books;
+
+    public ServerLinksManager serverLinksManager;
 
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
     public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
     public SpicordHook spicordHook;
     public PAPIBridgeReplacer papi;
+
+    
+
     private final Metrics.Factory metricsFactory;
     private Metrics metrics;
 
@@ -71,6 +77,7 @@ public class GlacierMain {
         this.dataDirectory = dataDirectory;
         this.metricsFactory = metricsFactory;
         this.commandManager = commandManager;
+        
 
         properties.load(this.getClass().getClassLoader().getResourceAsStream("pom.properties"));
     }
@@ -82,11 +89,15 @@ public class GlacierMain {
         this.commands = new ConfigProvider(this, dataDirectory, "commands.yml");
         this.config = new ConfigProvider(this, dataDirectory, "config.yml");
         this.announcerConfig = new ConfigProvider(this, dataDirectory, "announcer.yml");
+        this.serverlinksConfig = new ConfigProvider(this, dataDirectory, "serverlinks.yml");
 
         messages.loadConfig();
         config.loadConfig();
         announcerConfig.loadConfig();
         commands.loadConfig();
+        serverlinksConfig.loadConfig();
+
+        this.serverLinksManager = new ServerLinksManager(this);
 
         if(isPluginPresent("spicord")) {
             spicordHook = new SpicordHook(this);
@@ -99,7 +110,10 @@ public class GlacierMain {
         } else addMetricsPie("uses_papiproxybridge", "false");
 
         loadCommands();
+        loadEvents();
         loadAutoMessages();
+
+        serverLinksManager.loadServerLinks();
     }
 
     public void loadCommands() {
@@ -160,6 +174,10 @@ public class GlacierMain {
 
     }
 
+    public void loadEvents() {
+        server.getEventManager().register(this, new PostLogin(this));
+    }
+
     public void loadAutoMessages() {
 
         messageSchedules.forEach((k, s) -> {
@@ -177,7 +195,10 @@ public class GlacierMain {
     public void reload() {
         messages.loadConfig();
         config.loadConfig();
+        serverlinksConfig.loadConfig();
+
         reloadAnnouncer();
+        serverLinksManager.reloadServerLinks();
     }
 
     public void reloadAnnouncer() {

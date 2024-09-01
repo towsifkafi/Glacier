@@ -1,0 +1,28 @@
+# Config for Server Links
+
+# Resends Server Links when the config is reloaded
+resend-links-on-reload: true
+# Resends Server Links when a player switches servers
+resend-links-on-switch: true
+# Blacklist servers to not send Server Links
+# Example:
+server-blacklist:
+  - lobby2
+  - server1
+
+# Invert blacklist (Whitelist mode)
+invert-blacklist: false
+
+links:
+  link1:
+    name: "Link 1"
+    link: "https://example.com"
+
+  link2:
+    name: "Link 2"
+    link: "https://example.com"
+  
+  link3:
+    name: "Link 3"
+    link: "https://example.com"
+    type: "BUG_REPORT"

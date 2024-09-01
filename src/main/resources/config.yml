@@ -1,5 +1,6 @@
 # Announcer
 announcer-enabled: true
+serverlinks-enabled: true
 
 # Utilities
 
