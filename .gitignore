@@ -114,3 +114,4 @@ run/
 
 # Other
 .scraped/
+.scripts/
