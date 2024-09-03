@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -18,6 +19,18 @@ import java.time.Duration;
 import static com.towsifkafi.glacier.GlacierMain.replaceDefault;
 
 public class GTitle {
+
+    public GTitle(GlacierMain plugin) {
+
+        CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("gtitle.command"))
+        .aliases(plugin.commands.getStringList("gtitle.aliases").toArray(new String[0]))
+        .plugin(this)
+        .build();
+
+        plugin.commandLoader.commandMetas.add(meta);
+        plugin.commandManager.register(meta, GTitle.createBrigradierCommand(plugin));
+    }
+
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         Component defaultMessage = plugin.mm.deserialize(
                 plugin.messages.getString("gtitle-usage")

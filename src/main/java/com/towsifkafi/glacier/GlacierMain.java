@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.towsifkafi.glacier.commands.*;
 import com.towsifkafi.glacier.config.ConfigProvider;
 import com.towsifkafi.glacier.events.PostLogin;
+import com.towsifkafi.glacier.handlers.CommandLoader;
 import com.towsifkafi.glacier.handlers.ServerLinksManager;
 import com.towsifkafi.glacier.utils.Metrics;
 import com.towsifkafi.glacier.utils.PAPIBridgeReplacer;
@@ -16,7 +17,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
-import com.velocitypowered.api.util.ServerLink;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -45,7 +46,7 @@ import static com.towsifkafi.glacier.handlers.AnnouncerManager.scheduleAnnouncem
 public class GlacierMain {
 
     public final ProxyServer server;
-    private final CommandManager commandManager;
+    public final CommandManager commandManager;
     public Logger logger;
     public final Path dataDirectory;
     public final Properties properties = new Properties();
@@ -58,14 +59,13 @@ public class GlacierMain {
     public ConfigProvider books;
 
     public ServerLinksManager serverLinksManager;
+    public CommandLoader commandLoader;
 
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
     public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
     public SpicordHook spicordHook;
     public PAPIBridgeReplacer papi;
-
-    
 
     private final Metrics.Factory metricsFactory;
     private Metrics metrics;
@@ -98,6 +98,7 @@ public class GlacierMain {
         serverlinksConfig.loadConfig();
 
         this.serverLinksManager = new ServerLinksManager(this);
+        this.commandLoader = new CommandLoader(this);
 
         if(isPluginPresent("spicord")) {
             spicordHook = new SpicordHook(this);
@@ -109,69 +110,11 @@ public class GlacierMain {
             addMetricsPie("uses_papiproxybridge", "true");
         } else addMetricsPie("uses_papiproxybridge", "false");
 
-        loadCommands();
+        commandLoader.loadCommands();
         loadEvents();
         loadAutoMessages();
 
         serverLinksManager.loadServerLinks();
-    }
-
-    public void loadCommands() {
-
-        if(commands.getBoolean("glacier.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("glacier.command"))
-                            .aliases(commands.getStringList("glacier.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), Glacier.createBrigradierCommand(this)
-            );
-        }
-
-        if(commands.getBoolean("gtitle.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("gtitle.command"))
-                            .aliases(commands.getStringList("gtitle.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), GTitle.createBrigradierCommand(this)
-            );
-        }
-
-        if(commands.getBoolean("gactionbar.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("gactionbar.command"))
-                            .aliases(commands.getStringList("gactionbar.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), GActionBar.createBrigradierCommand(this)
-            );
-        }
-
-        if(commands.getBoolean("gannouncer.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("gannouncer.command"))
-                            .aliases(commands.getStringList("gannouncer.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), GAnnouncer.createBrigradierCommand(this)
-            );
-        }
-
-        if(commands.getBoolean("gsudo.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("gsudo.command"))
-                            .aliases(commands.getStringList("gsudo.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), GSudo.createBrigradierCommand(this)
-            );
-        }
-
-        if(commands.getBoolean("gkick.enabled")) {
-            commandManager.register(
-                    commandManager.metaBuilder(commands.getString("gkick.command"))
-                            .aliases(commands.getStringList("gkick.aliases").toArray(new String[0]))
-                            .plugin(this)
-                            .build(), GKick.createBrigradierCommand(this)
-            );
-        }
-
     }
 
     public void loadEvents() {
@@ -193,11 +136,13 @@ public class GlacierMain {
     }
 
     public void reload() {
+        commands.loadConfig();
         messages.loadConfig();
         config.loadConfig();
         serverlinksConfig.loadConfig();
 
         reloadAnnouncer();
+        commandLoader.reloadCommands();
         serverLinksManager.reloadServerLinks();
     }
 

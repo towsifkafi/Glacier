@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.inventory.Book;
@@ -21,6 +22,18 @@ import java.util.Optional;
 import static com.towsifkafi.glacier.GlacierMain.replaceDefault;
 
 public class GSudo {
+
+    public GSudo(GlacierMain plugin) {
+
+        CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("gsudo.command"))
+        .aliases(plugin.commands.getStringList("gsudo.aliases").toArray(new String[0]))
+        .plugin(this)
+        .build();
+
+        plugin.commandLoader.commandMetas.add(meta);
+        plugin.commandManager.register(meta, GSudo.createBrigradierCommand(plugin));
+    }
+
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         Component defaultMessage = plugin.mm.deserialize(
                 plugin.messages.getString("gsudo-usage")

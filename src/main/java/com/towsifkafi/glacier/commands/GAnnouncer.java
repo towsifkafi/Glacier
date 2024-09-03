@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
@@ -20,6 +21,18 @@ import static com.towsifkafi.glacier.handlers.AnnouncerManager.handleAnnouncemen
 import static com.towsifkafi.glacier.handlers.AnnouncerManager.sendAnnouncement;
 
 public class GAnnouncer {
+
+    public GAnnouncer(GlacierMain plugin) {
+
+        CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("gannouncer.command"))
+        .aliases(plugin.commands.getStringList("gannouncer.aliases").toArray(new String[0]))
+        .plugin(this)
+        .build();
+
+        plugin.commandLoader.commandMetas.add(meta);
+        plugin.commandManager.register(meta, GAnnouncer.createBrigradierCommand(plugin));
+    }
+
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         Component defaultMessage = plugin.mm.deserialize(
                 plugin.messages.getString("gannouncer-usage")

@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.adventure.text.Component;
 
@@ -20,6 +21,17 @@ import static com.towsifkafi.glacier.GlacierMain.replaceDefault;
 
 
 public class GKick {
+
+    public GKick(GlacierMain plugin) {
+
+        CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("gkick.command"))
+        .aliases(plugin.commands.getStringList("gkick.aliases").toArray(new String[0]))
+        .plugin(this)
+        .build();
+
+        plugin.commandLoader.commandMetas.add(meta);
+        plugin.commandManager.register(meta, GKick.createBrigradierCommand(plugin));
+    }
 
     public static int kickByName(CommandContext<CommandSource> context, GlacierMain plugin, String target, String reason) {
 

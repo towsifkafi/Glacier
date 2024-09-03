@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.command.BrigadierCommand;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,17 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class Glacier {
+
+    public Glacier(GlacierMain plugin) {
+
+        CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("glacier.command"))
+        .aliases(plugin.commands.getStringList("glacier.aliases").toArray(new String[0]))
+        .plugin(this)
+        .build();
+
+        plugin.commandLoader.commandMetas.add(meta);
+        plugin.commandManager.register(meta, Glacier.createBrigradierCommand(plugin));
+    }
 
     public static BrigadierCommand createBrigradierCommand(GlacierMain plugin) {
         LiteralCommandNode<CommandSource> glacierMain = LiteralArgumentBuilder
