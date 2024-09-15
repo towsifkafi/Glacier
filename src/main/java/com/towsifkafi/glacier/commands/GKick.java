@@ -150,11 +150,6 @@ public class GKick {
 
                             String subcommand = context.getArgument("subcommand", String.class);
 
-                            List<String> announcements = new ArrayList<>();
-                            plugin.messageSchedules.forEach((k, v) -> {
-                                announcements.add(k);
-                            });
-
                             if(subcommand.equalsIgnoreCase("byname")) {
                                 context.getSource().sendMessage(
                                         replaceDefault(defaultMessage, "<type>", "byname")
