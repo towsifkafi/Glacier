@@ -26,6 +26,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
+
       - name: Extract Maven project version
         run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
         id: project
@@ -39,12 +45,6 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           path: target/*.jar
-
-      - name: Declare some variables
-        shell: bash
-        run: |
-          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
