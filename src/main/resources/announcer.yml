@@ -1,11 +1,39 @@
 
+# AVAILABLE MODES:
+# SIMPLE, SIMPLE_RANDOM, TIME_BASED
+
+default-mode: SIMPLE_RANDOM
+
+delay: 10
+
+show-in-console: false
+
 enable-papi-bridge: true
+
 announcements:
-  example:
+  simple_example:
     type: message
-    delay: 10
     server: all
     text:
-      - "       Test          "
+      - "    1   Test  1        "
       - "   This is a test announcement"
       - "         line 3"
+
+  simple_example2:
+    type: message
+    server: all
+    text:
+      - "    2   Test  2        "
+      - "   This is a test announcement"
+      - "         line 3"
+
+  timed_example:
+    mode: TIME_BASED
+    type: message
+    delay: 5
+    server: all
+    text:
+      - "       Timed Test          "
+      - "   This is a test announcement"
+      - "         line 3"
+

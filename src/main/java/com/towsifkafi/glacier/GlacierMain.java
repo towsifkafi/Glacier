@@ -1,9 +1,9 @@
 package com.towsifkafi.glacier;
 
 import com.google.inject.Inject;
-import com.towsifkafi.glacier.commands.*;
 import com.towsifkafi.glacier.config.ConfigProvider;
 import com.towsifkafi.glacier.events.PostLogin;
+import com.towsifkafi.glacier.handlers.AnnouncementManager;
 import com.towsifkafi.glacier.handlers.CommandLoader;
 import com.towsifkafi.glacier.handlers.ServerLinksManager;
 import com.towsifkafi.glacier.utils.Metrics;
@@ -11,12 +11,12 @@ import com.towsifkafi.glacier.utils.PAPIBridgeReplacer;
 import com.towsifkafi.glacier.utils.SpicordHook;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.scheduler.ScheduledTask;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -28,8 +28,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
-import static com.towsifkafi.glacier.handlers.AnnouncerManager.scheduleAnnouncement;
 
 @Plugin(
         id = "glacier",
@@ -45,9 +43,12 @@ import static com.towsifkafi.glacier.handlers.AnnouncerManager.scheduleAnnouncem
 )
 public class GlacierMain {
 
+    private static GlacierMain instance;
+    public Logger logger;
+
     public final ProxyServer server;
     public final CommandManager commandManager;
-    public Logger logger;
+
     public final Path dataDirectory;
     public final Properties properties = new Properties();
 
@@ -58,12 +59,13 @@ public class GlacierMain {
     public ConfigProvider serverlinksConfig;
     public ConfigProvider books;
 
-    public ServerLinksManager serverLinksManager;
     public CommandLoader commandLoader;
+    public ServerLinksManager serverLinksManager;
+    public AnnouncementManager announcer;
 
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
-    public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
+    
     public SpicordHook spicordHook;
     public PAPIBridgeReplacer papi;
 
@@ -80,6 +82,7 @@ public class GlacierMain {
         
 
         properties.load(this.getClass().getClassLoader().getResourceAsStream("pom.properties"));
+        instance = this;
     }
 
     @Subscribe
@@ -97,8 +100,9 @@ public class GlacierMain {
         commands.loadConfig();
         serverlinksConfig.loadConfig();
 
-        this.serverLinksManager = new ServerLinksManager(this);
         this.commandLoader = new CommandLoader(this);
+        this.announcer = new AnnouncementManager(this);
+        this.serverLinksManager = new ServerLinksManager(this);
 
         if(isPluginPresent("spicord")) {
             spicordHook = new SpicordHook(this);
@@ -110,29 +114,21 @@ public class GlacierMain {
             addMetricsPie("uses_papiproxybridge", "true");
         } else addMetricsPie("uses_papiproxybridge", "false");
 
-        commandLoader.loadCommands();
         loadEvents();
-        loadAutoMessages();
-
+        commandLoader.loadCommands();
+    
+        announcer.loadAnnouncements();
         serverLinksManager.loadServerLinks();
+
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        
     }
 
     public void loadEvents() {
         server.getEventManager().register(this, new PostLogin(this));
-    }
-
-    public void loadAutoMessages() {
-
-        messageSchedules.forEach((k, s) -> {
-            s.cancel();
-        });
-        messageSchedules.clear();
-        if(config.getBoolean("announcer-enabled")) {
-            announcerConfig.getMap("announcements").forEach((k, msg) -> {
-                scheduleAnnouncement(this, k);
-            });
-        }
-
     }
 
     public void reload() {
@@ -141,14 +137,9 @@ public class GlacierMain {
         config.loadConfig();
         serverlinksConfig.loadConfig();
 
-        reloadAnnouncer();
         commandLoader.reloadCommands();
+        announcer.reloadAnnouncer();
         serverLinksManager.reloadServerLinks();
-    }
-
-    public void reloadAnnouncer() {
-        announcerConfig.loadConfig();
-        loadAutoMessages();
     }
 
     public static Component replaceDefault(Component defaultMessage, String match, String replace) {
@@ -170,5 +161,9 @@ public class GlacierMain {
 
     public void addMetricsPie(String id, String value) {
         metrics.addCustomChart(new Metrics.SimplePie(id, () -> value));
+    }
+
+    public static GlacierMain getInstance() {
+        return instance;
     }
 }

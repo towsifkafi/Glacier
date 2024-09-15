@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.towsifkafi.glacier.handlers.AnnouncerManager.handleAnnouncement;
-import static com.towsifkafi.glacier.handlers.AnnouncerManager.sendAnnouncement;
-
 public class GAnnouncer {
 
     public GAnnouncer(GlacierMain plugin) {
@@ -56,7 +53,7 @@ public class GAnnouncer {
                             String subcommand = context.getArgument("subcommand", String.class);
 
                             List<String> announcements = new ArrayList<>();
-                            plugin.messageSchedules.forEach((k, v) -> {
+                            plugin.announcer.messageSchedules.forEach((k, v) -> {
                                 announcements.add(k);
                             });
 
@@ -109,7 +106,7 @@ public class GAnnouncer {
 
                                     } else {
                                         List<String> announcements = new ArrayList<>();
-                                        plugin.messageSchedules.forEach((k, v) -> {
+                                        plugin.announcer.messageSchedules.forEach((k, v) -> {
                                             announcements.add(k);
                                         });
 
@@ -123,7 +120,7 @@ public class GAnnouncer {
                                     String id = context.getArgument("id", String.class);
 
                                     List<String> announcements = new ArrayList<>();
-                                    plugin.messageSchedules.forEach((k, v) -> {
+                                    plugin.announcer.messageSchedules.forEach((k, v) -> {
                                         announcements.add(k);
                                     });
 
@@ -137,7 +134,7 @@ public class GAnnouncer {
                                             ));
                                             return Command.SINGLE_SUCCESS;
                                         } else if(id.equalsIgnoreCase("all")) {
-                                            plugin.reloadAnnouncer();
+                                            plugin.announcer.reloadAnnouncer();
                                             context.getSource().sendMessage(plugin.mm.deserialize(
                                                     plugin.messages.getString("gannouncer-reload"),
                                                     Placeholder.unparsed("version", plugin.properties.getProperty("version"))
@@ -166,9 +163,9 @@ public class GAnnouncer {
                                     }
 
                                     if(subcommand.equalsIgnoreCase("view")) {
-                                        sendAnnouncement(plugin, id, (Player) context.getSource());
+                                        plugin.announcer.sendAnnouncement(id, (Player) context.getSource());
                                     } else if(subcommand.equalsIgnoreCase("send")) {
-                                        handleAnnouncement(plugin, id);
+                                        plugin.announcer.handleAnnouncement(id);
                                     }
 
                                     return Command.SINGLE_SUCCESS;
