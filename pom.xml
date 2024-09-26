@@ -6,7 +6,7 @@
 
     <groupId>com.towsifkafi</groupId>
     <artifactId>Glacier</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Glacier</name>
@@ -106,6 +106,22 @@
                                     
                                 </includes>
                             </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>D:\i10\Project\Minecraft\Servers\Proxy\plugins\Glacier-1.4.2-SNAPSHOT.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

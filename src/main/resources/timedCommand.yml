@@ -1,0 +1,33 @@
+commands:
+  bwEventAlerts:
+    alert1st:
+      date: ''
+      day: Fri
+      time: 02:45:00 PM
+      cmd: alert &a&lEvent starting in 15 minutes! &3/server BwEvent
+      count: 2
+    alert2nd:
+      date: ''
+      day: Fri
+      time: 02:50:00 PM
+      cmd: alert &a&lEvent starting in 10 minutes! &3/server BwEvent
+      count: 3
+    alert3rd:
+      date: ''
+      day: Fri
+      time: 02:55:00 PM
+      cmd: alert &a&lEvent starting in 5 minutes! &6/server BwEvent
+      count: 4
+    alert4th:
+      date: ''
+      day: Fri
+      time: 02:59:00 PM
+      cmd: alert &a&lEvent starting in 1 minutes! &4/server BwEvent
+      count: 5
+  proxy:
+    stopProxy:
+      date: 30/12/2030
+      day: Fri
+      time: 11:59:59 AM
+      cmd: end
+      count: 1

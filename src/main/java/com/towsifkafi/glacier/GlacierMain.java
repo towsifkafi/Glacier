@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.towsifkafi.glacier.config.ConfigProvider;
 import com.towsifkafi.glacier.events.PostLogin;
 import com.towsifkafi.glacier.handlers.AnnouncementManager;
+import com.towsifkafi.glacier.handlers.TimedCommand;
 import com.towsifkafi.glacier.handlers.CommandLoader;
 import com.towsifkafi.glacier.handlers.ServerLinksManager;
 import com.towsifkafi.glacier.utils.Metrics;
@@ -28,14 +29,15 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(
         id = "glacier",
         name = "Glacier",
-        description = "Weird ass util plugin for minecraft servers",
+        description = "A util plugin for minecraft servers",
         authors = {"TowsifKafi"},
         url = "https://towsifkafi.com",
-        version = "1.1.0-SNAPSHOT",
+        version = "1.4.2-SNAPSHOT",
         dependencies = {
                 @Dependency(id = "spicord", optional = true),
                 @Dependency(id = "papiproxybridge", optional = true)
@@ -57,11 +59,13 @@ public class GlacierMain {
     public ConfigProvider announcerConfig;
     public ConfigProvider commands;
     public ConfigProvider serverlinksConfig;
+    public ConfigProvider timedCommandConfig;
     public ConfigProvider books;
 
     public CommandLoader commandLoader;
     public ServerLinksManager serverLinksManager;
     public AnnouncementManager announcer;
+    public TimedCommand timedCommand;
 
     public MiniMessage mm = MiniMessage.miniMessage();
     public LegacyComponentSerializer lm = LegacyComponentSerializer.legacyAmpersand();
@@ -88,21 +92,25 @@ public class GlacierMain {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         enableMetrics();
+        this.config = new ConfigProvider(this, dataDirectory, "config.yml");
+
         this.messages = new ConfigProvider(this, dataDirectory, "messages.yml");
         this.commands = new ConfigProvider(this, dataDirectory, "commands.yml");
-        this.config = new ConfigProvider(this, dataDirectory, "config.yml");
         this.announcerConfig = new ConfigProvider(this, dataDirectory, "announcer.yml");
         this.serverlinksConfig = new ConfigProvider(this, dataDirectory, "serverlinks.yml");
+        this.timedCommandConfig = new ConfigProvider(this, dataDirectory, "timedCommand.yml");
 
         messages.loadConfig();
         config.loadConfig();
         announcerConfig.loadConfig();
         commands.loadConfig();
         serverlinksConfig.loadConfig();
+        timedCommandConfig.loadConfig();
 
         this.commandLoader = new CommandLoader(this);
         this.announcer = new AnnouncementManager(this);
         this.serverLinksManager = new ServerLinksManager(this);
+        this.timedCommand = new TimedCommand(this);
 
         if(isPluginPresent("spicord")) {
             spicordHook = new SpicordHook(this);
@@ -119,6 +127,10 @@ public class GlacierMain {
     
         announcer.loadAnnouncements();
         serverLinksManager.loadServerLinks();
+
+        server.getScheduler().buildTask(this, () -> timedCommand.runScheduledTask())
+                .repeat(1, TimeUnit.SECONDS) // Run every 1 seconds
+                .schedule();
 
     }
 
@@ -140,6 +152,7 @@ public class GlacierMain {
         commandLoader.reloadCommands();
         announcer.reloadAnnouncer();
         serverLinksManager.reloadServerLinks();
+        timedCommand.reloadTimedCommand();
     }
 
     public static Component replaceDefault(Component defaultMessage, String match, String replace) {
