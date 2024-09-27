@@ -53,12 +53,14 @@ public class GAnnouncer {
                             String subcommand = context.getArgument("subcommand", String.class);
 
                             List<String> announcements = new ArrayList<>();
-                            plugin.announcer.messageSchedules.forEach((k, v) -> {
-                                announcements.add(k);
-                            });
+                            announcements.addAll(plugin.announcer.timedAnnouncements.keySet());
+                            announcements.addAll(plugin.announcer.simpleAnnouncements.keySet());
+
 
                             if(subcommand.equalsIgnoreCase("reload")) {
                                 plugin.announcerConfig.loadConfig();
+                                plugin.announcer.loadAnnouncements();
+
                                 context.getSource().sendMessage(plugin.mm.deserialize(
                                         plugin.messages.getString("gannouncer-reload-config"),
                                         Placeholder.unparsed("version", plugin.properties.getProperty("version"))
@@ -106,9 +108,8 @@ public class GAnnouncer {
 
                                     } else {
                                         List<String> announcements = new ArrayList<>();
-                                        plugin.announcer.messageSchedules.forEach((k, v) -> {
-                                            announcements.add(k);
-                                        });
+                                        announcements.addAll(plugin.announcer.timedAnnouncements.keySet());
+                                        announcements.addAll(plugin.announcer.simpleAnnouncements.keySet());
 
                                         announcements.forEach(builder::suggest);
                                     }
@@ -120,9 +121,8 @@ public class GAnnouncer {
                                     String id = context.getArgument("id", String.class);
 
                                     List<String> announcements = new ArrayList<>();
-                                    plugin.announcer.messageSchedules.forEach((k, v) -> {
-                                        announcements.add(k);
-                                    });
+                                    announcements.addAll(plugin.announcer.timedAnnouncements.keySet());
+                                    announcements.addAll(plugin.announcer.simpleAnnouncements.keySet());
 
                                     if(subcommand.equalsIgnoreCase("reload")) {
 
