@@ -1,6 +1,7 @@
 # Announcer
 announcer-enabled: true
 serverlinks-enabled: true
+timedCommand-enabled: true
 
 # Utilities
 
