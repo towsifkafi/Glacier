@@ -3,6 +3,9 @@ announcer-enabled: true
 serverlinks-enabled: true
 timedCommand-enabled: true
 
+# Debug
+log-plugin-messages: false
+
 # Utilities
 
 

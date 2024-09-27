@@ -2,6 +2,7 @@ package com.towsifkafi.glacier;
 
 import com.google.inject.Inject;
 import com.towsifkafi.glacier.config.ConfigProvider;
+import com.towsifkafi.glacier.events.PluginMessageEvents;
 import com.towsifkafi.glacier.events.PostLogin;
 import com.towsifkafi.glacier.handlers.AnnouncementManager;
 import com.towsifkafi.glacier.handlers.TimedCommand;
@@ -18,6 +19,8 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -65,6 +68,8 @@ public class GlacierMain {
     public CommandLoader commandLoader;
     public ServerLinksManager serverLinksManager;
     public AnnouncementManager announcer;
+
+    public static MinecraftChannelIdentifier pluginChannel = MinecraftChannelIdentifier.create("bukkit", "glacier");
     public TimedCommand timedCommand;
 
     public MiniMessage mm = MiniMessage.miniMessage();
@@ -92,6 +97,7 @@ public class GlacierMain {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         enableMetrics();
+        server.getChannelRegistrar().register(pluginChannel);
         this.config = new ConfigProvider(this, dataDirectory, "config.yml");
 
         this.messages = new ConfigProvider(this, dataDirectory, "messages.yml");
@@ -141,6 +147,7 @@ public class GlacierMain {
 
     public void loadEvents() {
         server.getEventManager().register(this, new PostLogin(this));
+        server.getEventManager().register(this, new PluginMessageEvents(this));
     }
 
     public void reload() {

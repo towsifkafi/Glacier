@@ -10,6 +10,9 @@ show-in-console: false
 
 enable-papi-bridge: true
 
+# https://www.digminecraft.com/lists/sound_list_pc.php & requires glacier-spigot plugin
+default-sound: "none"
+
 announcements:
   simple_example:
     type: message
@@ -22,6 +25,7 @@ announcements:
   simple_example2:
     type: message
     server: all
+    sound: "minecraft:block.note_block.pling"
     text:
       - "    2   Test  2        "
       - "   This is a test announcement"

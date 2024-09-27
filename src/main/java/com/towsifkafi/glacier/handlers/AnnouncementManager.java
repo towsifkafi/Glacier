@@ -1,7 +1,10 @@
 package com.towsifkafi.glacier.handlers;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.towsifkafi.glacier.GlacierMain;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -11,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class AnnouncementManager {
@@ -18,9 +22,13 @@ public class AnnouncementManager {
     public GlacierMain plugin;
     public Map<String, ScheduledTask> messageSchedules = new HashMap<>();
     private boolean simpleRandom = false;
+
+    private String defaultSound = "none";
+
     private int delay = 300;
     private int index = 0;
 
+    public Map<String, LinkedHashMap<String, ?>> timedAnnouncements = new LinkedHashMap<>();
     public Map<String, LinkedHashMap<String, ?>> simpleAnnouncements = new LinkedHashMap<>();
 
     public AnnouncementManager(GlacierMain plugin) {
@@ -39,6 +47,7 @@ public class AnnouncementManager {
             index = 0;
             simpleRandom = (plugin.announcerConfig.getString("default-mode").contentEquals("SIMPLE_RANDOM"));
             delay = plugin.announcerConfig.getInt("delay");
+            defaultSound = plugin.announcerConfig.getString("default-sound");
 
             loadTimedAnnouncements();
         }
@@ -55,6 +64,7 @@ public class AnnouncementManager {
 
             if(mode == null) mode = plugin.announcerConfig.getString("default-mode");
             if(mode.equalsIgnoreCase("time_based")) {
+                timedAnnouncements.put(k, map);
                 scheduleAnnouncement(k);
             } else if(mode.toLowerCase().contains("simple")) {
                 simpleAnnouncements.put(k, map);
@@ -129,6 +139,7 @@ public class AnnouncementManager {
                 if(player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(serverName)
                         || serverName.equalsIgnoreCase("all")) {
                     sendAnnouncement(id, player);
+
                 }
 
             });
@@ -161,6 +172,22 @@ public class AnnouncementManager {
         String type = (String) obj.get("type");
         @SuppressWarnings("unchecked")
         List<String> text = (List<String>) obj.get("text");
+
+        String sound = (String) obj.get("sound");
+        if(sound == null) {
+            sound = defaultSound;
+        }
+
+        if(sound.equalsIgnoreCase("none")) return;
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("playsound");
+        out.writeUTF(sound);
+
+        Optional<ServerConnection> connection = player.getCurrentServer();
+        if (connection.isPresent()) {
+            connection.get().sendPluginMessage(GlacierMain.pluginChannel, out.toByteArray());
+        }
 
         if(type.equalsIgnoreCase("message")) {
 
