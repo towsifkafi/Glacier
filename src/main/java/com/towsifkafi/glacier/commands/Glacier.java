@@ -22,7 +22,7 @@ public class Glacier {
 
         CommandMeta meta = plugin.commandManager.metaBuilder(plugin.commands.getString("glacier.command"))
         .aliases(plugin.commands.getStringList("glacier.aliases").toArray(new String[0]))
-        .plugin(this)
+        .plugin(plugin)
         .build();
 
         plugin.commandLoader.commandMetas.add(meta);
